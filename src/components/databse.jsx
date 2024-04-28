@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import { ClipLoader } from 'react-spinners';
-import { getDocs, collection,addDoc } from "firebase/firestore";
+import {doc, getDocs, collection,addDoc, deleteDoc, updateDoc} from "firebase/firestore";
 import { db } from "../config/firebase";
 
 export default function Database() {
@@ -10,9 +10,36 @@ export default function Database() {
   const [movieTitle, setMovieTitle] = useState("");
   const [movieYear, setMovieYear] = useState(0);
   const [isNew, setIsNew] = useState(false);
+ 
   useEffect(() => {
     getData();
   },[]);
+  // Delete Collection
+  async function deleteEntireCollection(collectionPath) {
+    try {
+      const querySnapshot = await getDocs(collection(db, collectionPath));
+  
+      querySnapshot.forEach(async (doc) => {
+        await deleteDoc(doc.ref);
+      });
+  
+      console.log(`Collection ${collectionPath} deleted successfully.`);
+    } catch (error) {
+      console.error("Error deleting collection:", error);
+    }
+  }
+  //Delete the Document data
+  async function deleteDocument(documentId) {
+    try {
+      const documentRef = doc(db, "movies", documentId); // "movies" is the collection name, replace it with your collection name
+      await deleteDoc(documentRef);
+      console.log(`Document with ID ${documentId} deleted successfully.`);
+      await getData();
+    } catch (error) {
+      console.error("Error deleting document:", error);
+    }
+  }
+  //Get Data From a Documents
   const getData = async () => {
     try {
       const data = await getDocs(databaseRef);
@@ -28,6 +55,7 @@ export default function Database() {
       console.error(err);
     }
   };
+  //Upload a data to database
   const uploadMovie=async()=>{
     try {
         await addDoc(databaseRef,{
@@ -41,6 +69,18 @@ export default function Database() {
         
     }
   }
+  //Update data to document
+  async function updateDocument(documentId, newData) {
+    try {
+      const documentRef = doc(db, "movies", documentId);
+      await updateDoc(documentRef, newData);
+      console.log(`Document with ID ${documentId} updated successfully.`);
+    } catch (error) {
+      console.error("Error updating document:", error);
+    }
+  }
+
+  
   return <center>
     <div>
    
@@ -54,7 +94,11 @@ export default function Database() {
         <h3>
             {movie.id}
         </h3>
+        <button onClick={()=>deleteDocument(movie.id)} > Delete Movie</button>
+       
+     
     </div>): <ClipLoader color="#36D7B7" loading={true}  size="50px" />}
+    
     <div style={{paddingBottom:"50px"}}>
         <input placeholder="movie title" onChange={(e)=>setMovieTitle(e.target.value)}></input>
         <input placeholder="movie year" onChange={(e)=>setMovieYear(Number(e.target.value))}></input>
