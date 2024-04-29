@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-
 import { ClipLoader } from 'react-spinners';
 import {doc, getDocs, collection,addDoc, deleteDoc, updateDoc} from "firebase/firestore";
 import { db } from "../config/firebase";
@@ -18,7 +17,6 @@ export default function Database() {
   async function deleteEntireCollection(collectionPath) {
     try {
       const querySnapshot = await getDocs(collection(db, collectionPath));
-  
       querySnapshot.forEach(async (doc) => {
         await deleteDoc(doc.ref);
       });
