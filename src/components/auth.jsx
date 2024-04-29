@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import {auth} from "../config/firebase"
 import {createUserWithEmailAndPassword} from "firebase/auth"
 export default function Auth(){
-    const [emial,setEmail] = useState("")
+
+    const [email,setEmail] = useState("")
     const [password,setPassword] = useState("")
-     const signIn=async()=>{
-       console.log(emial);
+    const signIn=async()=>{
+       console.log(email);
        try {
-        await createUserWithEmailAndPassword(auth,emial,password)
+        await createUserWithEmailAndPassword(auth,email,password)
        } catch (error) {
         console.log(error)
        }
